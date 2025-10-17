@@ -268,13 +268,18 @@
                     </tr>
                     <tr>
                         <td class="label-cell">1× Project Manager</td>
-                        <td class="input-cell"><input type="number" id="pm_salary" value="80000" oninput="calculate()"></td>
-                        <td class="result-cell"><span id="pm_result">₹80,000</span></td>
+                        <td class="input-cell"><input type="number" id="pm_salary" value="50000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="pm_result">₹50,000</span></td>
                     </tr>
                     <tr>
                         <td class="label-cell">1× Admin</td>
-                        <td class="input-cell"><input type="number" id="admin_salary" value="35000" oninput="calculate()"></td>
-                        <td class="result-cell"><span id="admin_result">₹35,000</span></td>
+                        <td class="input-cell"><input type="number" id="admin_salary" value="25000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="admin_result">₹25,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">1× Sales & Marketing Staff</td>
+                        <td class="input-cell"><input type="number" id="mkt" value="40000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="mkt_result">₹40,000</span></td>
                     </tr>
                     <tr>
                         <td class="label-cell">2× Software Professionals (@ ₹60,000 each)</td>
@@ -283,12 +288,12 @@
                     </tr>
                     <tr>
                         <td class="label-cell">1× Support Staff</td>
-                        <td class="input-cell"><input type="number" id="support_salary" value="25000" oninput="calculate()"></td>
-                        <td class="result-cell"><span id="support_result">₹25,000</span></td>
+                        <td class="input-cell"><input type="number" id="support_salary" value="15000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="support_result">₹15,000</span></td>
                     </tr>
                     <tr class="total-row">
                         <td colspan="2">Total Manpower Cost (Monthly)</td>
-                        <td class="result-cell"><span id="manpowerTotal">₹2,60,000</span></td>
+                        <td class="result-cell"><span id="manpowerTotal">₹2,50,000</span></td>
                     </tr>
                     
                     <tr class="sub-section-header">
@@ -310,7 +315,7 @@
                         <td class="result-cell"><span id="water_result">₹3,000</span></td>
                     </tr>
                     <tr>
-                        <td class="label-cell">Internet & Broadband</td>
+                        <td class="label-cell">Broadband & Mobile Costs</td>
                         <td class="input-cell"><input type="number" id="internet" value="5000" oninput="calculate()"></td>
                         <td class="result-cell"><span id="internet_result">₹5,000</span></td>
                     </tr>
@@ -378,16 +383,6 @@
                     
                     <tr class="sub-section-header">
                         <td colspan="3">Subscription Packages</td>
-                    </tr>
-                    <tr>
-                        <td class="label-cell">Premium Patients (5000 users @ ₹199/month)</td>
-                        <td class="input-cell"><input type="number" id="patient_revenue" value="995000" oninput="calculate()"></td>
-                        <td class="result-cell"><span id="patient_result">₹9,95,000</span></td>
-                    </tr>
-                    <tr>
-                        <td class="label-cell">Small Clinics (200 @ ₹4,999/month)</td>
-                        <td class="input-cell"><input type="number" id="clinic_revenue" value="999800" oninput="calculate()"></td>
-                        <td class="result-cell"><span id="clinic_result">₹9,99,800</span></td>
                     </tr>
                     <tr>
                         <td class="label-cell">Medium Hospitals (50 @ ₹14,999/month)</td>
@@ -497,6 +492,7 @@
             const admin = parseFloat(document.getElementById('admin_salary').value) || 0;
             const dev = parseFloat(document.getElementById('dev_salary').value) || 0;
             const support = parseFloat(document.getElementById('support_salary').value) || 0;
+            const mkt = parseFloat(document.getElementById('mkt').value) || 0;
             
             const rent = parseFloat(document.getElementById('rent').value) || 0;
             const electricity = parseFloat(document.getElementById('electricity').value) || 0;
@@ -513,18 +509,16 @@
             const sms = parseFloat(document.getElementById('sms').value) || 0;
             const licenses = parseFloat(document.getElementById('licenses').value) || 0;
             
-            const patientRev = parseFloat(document.getElementById('patient_revenue').value) || 0;
-            const clinicRev = parseFloat(document.getElementById('clinic_revenue').value) || 0;
             const hospitalRev = parseFloat(document.getElementById('hospital_revenue').value) || 0;
             const enterpriseRev = parseFloat(document.getElementById('enterprise_revenue').value) || 0;
             const amcRev = parseFloat(document.getElementById('amc_revenue').value) || 0;
             
             const oneTimeCost = computers + furniture + establishment;
-            const manpowerTotal = pm + admin + dev + support;
+            const manpowerTotal = pm + admin + dev + support + mkt;
             const operationsTotal = rent + electricity + water + internet + pantry + consumables + security + travel;
             const softwareTotal = hosting + gemini + firebase + sms + licenses;
             const totalMonthlyCost = manpowerTotal + operationsTotal + softwareTotal;
-            const totalRevenue = patientRev + clinicRev + hospitalRev + enterpriseRev + amcRev;
+            const totalRevenue = hospitalRev + enterpriseRev + amcRev;
             const netProfit = totalRevenue - totalMonthlyCost;
             const annualProfit = netProfit * 12;
             const profitMargin = ((netProfit / totalRevenue) * 100).toFixed(1);
@@ -534,6 +528,7 @@
             document.getElementById('furniture_result').textContent = formatCurrency(furniture);
             document.getElementById('establishment_result').textContent = formatCurrency(establishment);
             document.getElementById('oneTimeCost').textContent = formatCurrency(oneTimeCost);
+            document.getElementById('mkt_result').textContent = formatCurrency(mkt);
             
             document.getElementById('pm_result').textContent = formatCurrency(pm);
             document.getElementById('admin_result').textContent = formatCurrency(admin);
@@ -558,8 +553,6 @@
             document.getElementById('licenses_result').textContent = formatCurrency(licenses);
             document.getElementById('softwareTotal').textContent = formatCurrency(softwareTotal);
             
-            document.getElementById('patient_result').textContent = formatCurrency(patientRev);
-            document.getElementById('clinic_result').textContent = formatCurrency(clinicRev);
             document.getElementById('hospital_result').textContent = formatCurrency(hospitalRev);
             document.getElementById('enterprise_result').textContent = formatCurrency(enterpriseRev);
             document.getElementById('amc_result').textContent = formatCurrency(amcRev);
