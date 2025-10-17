@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCare+ Business Model Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 0;
+        }
+        
+        .main-table {
+            padding: 30px;
+            overflow-x: auto;
+        }
+        
+        .summary-panel {
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+            padding: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            text-align: left;
+            font-size: 16px;
+        }
+        
+        .sub-section-header {
+            background: #e3e7f7;
+            color: #333;
+            font-weight: 600;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .label-cell {
+            font-weight: 500;
+            color: #333;
+            width: 45%;
+        }
+        
+        .input-cell {
+            width: 30%;
+        }
+        
+        .result-cell {
+            width: 25%;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .total-row {
+            background: #fff3cd;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .total-row td {
+            padding: 15px;
+            color: #856404;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .grand-total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .grand-total h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .grand-total .amount {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        
+        .profit-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .profit-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .profit-card .amount {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-panel {
+                border-left: none;
+                border-top: 3px solid #667eea;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💼 SmartCare+ Business Model Calculator</h1>
+            <p>Professional Cost Analysis & Revenue Projection (INR)</p>
+        </div>
+        
+        <div class="content">
+            <div class="main-table">
+                <table id="costTable">
+                    <tr class="section-header">
+                        <td colspan="3">💰 ONE-TIME COSTS</td>
+                    </tr>
+                    
+                    <tr class="sub-section-header">
+                        <td colspan="3">Hardware & Infrastructure</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Computers (5 units @ ₹50,000 each)</td>
+                        <td class="input-cell"><input type="number" id="computers" value="250000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="computers_result">₹2,50,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Furniture & Office Setup</td>
+                        <td class="input-cell"><input type="number" id="furniture" value="150000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="furniture_result">₹1,50,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Office Establishment (Deposit, etc.)</td>
+                        <td class="input-cell"><input type="number" id="establishment" value="100000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="establishment_result">₹1,00,000</span></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">Total One-Time Costs</td>
+                        <td class="result-cell"><span id="oneTimeCost">₹5,00,000</span></td>
+                    </tr>
+                    
+                    <tr class="section-header">
+                        <td colspan="3">📅 MONTHLY RECURRING COSTS</td>
+                    </tr>
+                    
+                    <tr class="sub-section-header">
+                        <td colspan="3">Manpower (Monthly Salaries)</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">1× Project Manager</td>
+                        <td class="input-cell"><input type="number" id="pm_salary" value="80000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="pm_result">₹80,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">1× Admin</td>
+                        <td class="input-cell"><input type="number" id="admin_salary" value="35000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="admin_result">₹35,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">2× Software Professionals (@ ₹60,000 each)</td>
+                        <td class="input-cell"><input type="number" id="dev_salary" value="120000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="dev_result">₹1,20,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">1× Support Staff</td>
+                        <td class="input-cell"><input type="number" id="support_salary" value="25000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="support_result">₹25,000</span></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">Total Manpower Cost (Monthly)</td>
+                        <td class="result-cell"><span id="manpowerTotal">₹2,60,000</span></td>
+                    </tr>
+                    
+                    <tr class="sub-section-header">
+                        <td colspan="3">Office Operations (Monthly)</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Office Rent</td>
+                        <td class="input-cell"><input type="number" id="rent" value="50000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="rent_result">₹50,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Electricity</td>
+                        <td class="input-cell"><input type="number" id="electricity" value="8000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="electricity_result">₹8,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Water & Taxes</td>
+                        <td class="input-cell"><input type="number" id="water" value="3000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="water_result">₹3,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Internet & Broadband</td>
+                        <td class="input-cell"><input type="number" id="internet" value="5000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="internet_result">₹5,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Pantry (Chai/Nashta)</td>
+                        <td class="input-cell"><input type="number" id="pantry" value="10000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="pantry_result">₹10,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Office Consumables (Paper, Cartridges)</td>
+                        <td class="input-cell"><input type="number" id="consumables" value="5000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="consumables_result">₹5,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Security & Cleaning Charges</td>
+                        <td class="input-cell"><input type="number" id="security" value="12000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="security_result">₹12,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Travel & Expenditure</td>
+                        <td class="input-cell"><input type="number" id="travel" value="15000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="travel_result">₹15,000</span></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">Total Office Operations (Monthly)</td>
+                        <td class="result-cell"><span id="operationsTotal">₹1,08,000</span></td>
+                    </tr>
+                    
+                    <tr class="sub-section-header">
+                        <td colspan="3">Software & Technology (Monthly)</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Cloud Hosting (AWS/GCP)</td>
+                        <td class="input-cell"><input type="number" id="hosting" value="40000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="hosting_result">₹40,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Gemini API Credits</td>
+                        <td class="input-cell"><input type="number" id="gemini" value="25000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="gemini_result">₹25,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Firebase & Database Services</td>
+                        <td class="input-cell"><input type="number" id="firebase" value="15000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="firebase_result">₹15,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">SMS/Notification Services (Twilio)</td>
+                        <td class="input-cell"><input type="number" id="sms" value="10000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="sms_result">₹10,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Software Licenses & Tools</td>
+                        <td class="input-cell"><input type="number" id="licenses" value="8000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="licenses_result">₹8,000</span></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="2">Total Software Cost (Monthly)</td>
+                        <td class="result-cell"><span id="softwareTotal">₹98,000</span></td>
+                    </tr>
+                    
+                    <tr class="section-header" style="background: #28a745;">
+                        <td colspan="3">💵 REVENUE (MONTHLY EARNING)</td>
+                    </tr>
+                    
+                    <tr class="sub-section-header">
+                        <td colspan="3">Subscription Packages</td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Premium Patients (5000 users @ ₹199/month)</td>
+                        <td class="input-cell"><input type="number" id="patient_revenue" value="995000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="patient_result">₹9,95,000</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Small Clinics (200 @ ₹4,999/month)</td>
+                        <td class="input-cell"><input type="number" id="clinic_revenue" value="999800" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="clinic_result">₹9,99,800</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Medium Hospitals (50 @ ₹14,999/month)</td>
+                        <td class="input-cell"><input type="number" id="hospital_revenue" value="749950" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="hospital_result">₹7,49,950</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">Enterprise (10 @ ₹49,999/month)</td>
+                        <td class="input-cell"><input type="number" id="enterprise_revenue" value="499990" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="enterprise_result">₹4,99,990</span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-cell">AMC Subscription (Annual Maintenance)</td>
+                        <td class="input-cell"><input type="number" id="amc_revenue" value="150000" oninput="calculate()"></td>
+                        <td class="result-cell"><span id="amc_result">₹1,50,000</span></td>
+                    </tr>
+                    <tr class="total-row" style="background: #d4edda; color: #155724;">
+                        <td colspan="2">Total Monthly Revenue</td>
+                        <td class="result-cell"><span id="revenueTotal">₹33,94,740</span></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="summary-panel">
+                <div class="summary-card">
+                    <h3>📊 Cost Summary</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">One-Time Setup</span>
+                        <span class="summary-value" id="summary_onetime">₹5,00,000</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Monthly Manpower</span>
+                        <span class="summary-value" id="summary_manpower">₹2,60,000</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Monthly Operations</span>
+                        <span class="summary-value" id="summary_operations">₹1,08,000</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Monthly Software</span>
+                        <span class="summary-value" id="summary_software">₹98,000</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <h3>💰 Revenue Summary</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Patient Subscriptions</span>
+                        <span class="summary-value" id="summary_patients">₹9,95,000</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Hospital Packages</span>
+                        <span class="summary-value" id="summary_hospitals">₹22,49,740</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">AMC & Services</span>
+                        <span class="summary-value" id="summary_amc">₹1,50,000</span>
+                    </div>
+                </div>
+                
+                <div class="grand-total">
+                    <h3>Total Monthly Cost</h3>
+                    <div class="amount" id="grandTotalCost">₹4,66,000</div>
+                </div>
+                
+                <div class="grand-total" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                    <h3>Total Monthly Revenue</h3>
+                    <div class="amount" id="grandTotalRevenue">₹33,94,740</div>
+                </div>
+                
+                <div class="profit-card">
+                    <h3>💎 Monthly Net Profit</h3>
+                    <div class="amount" id="netProfit">₹29,28,740</div>
+                    <p style="margin-top: 10px; font-size: 14px; opacity: 0.9;">Annual Profit: <strong id="annualProfit">₹3,51,44,880</strong></p>
+                </div>
+                
+                <div class="summary-card" style="margin-top: 20px;">
+                    <h3>📈 Key Metrics</h3>
+                    <div class="summary-item">
+                        <span class="summary-label">Profit Margin</span>
+                        <span class="summary-value" id="profitMargin">86.3%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Break-Even Time</span>
+                        <span class="summary-value" id="breakEven">< 1 month</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">ROI (Annual)</span>
+                        <span class="summary-value" id="roi">702%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function formatCurrency(num) {
+            return '₹' + num.toLocaleString('en-IN');
+        }
+        
+        function calculate() {
+            const computers = parseFloat(document.getElementById('computers').value) || 0;
+            const furniture = parseFloat(document.getElementById('furniture').value) || 0;
+            const establishment = parseFloat(document.getElementById('establishment').value) || 0;
+            
+            const pm = parseFloat(document.getElementById('pm_salary').value) || 0;
+            const admin = parseFloat(document.getElementById('admin_salary').value) || 0;
+            const dev = parseFloat(document.getElementById('dev_salary').value) || 0;
+            const support = parseFloat(document.getElementById('support_salary').value) || 0;
+            
+            const rent = parseFloat(document.getElementById('rent').value) || 0;
+            const electricity = parseFloat(document.getElementById('electricity').value) || 0;
+            const water = parseFloat(document.getElementById('water').value) || 0;
+            const internet = parseFloat(document.getElementById('internet').value) || 0;
+            const pantry = parseFloat(document.getElementById('pantry').value) || 0;
+            const consumables = parseFloat(document.getElementById('consumables').value) || 0;
+            const security = parseFloat(document.getElementById('security').value) || 0;
+            const travel = parseFloat(document.getElementById('travel').value) || 0;
+            
+            const hosting = parseFloat(document.getElementById('hosting').value) || 0;
+            const gemini = parseFloat(document.getElementById('gemini').value) || 0;
+            const firebase = parseFloat(document.getElementById('firebase').value) || 0;
+            const sms = parseFloat(document.getElementById('sms').value) || 0;
+            const licenses = parseFloat(document.getElementById('licenses').value) || 0;
+            
+            const patientRev = parseFloat(document.getElementById('patient_revenue').value) || 0;
+            const clinicRev = parseFloat(document.getElementById('clinic_revenue').value) || 0;
+            const hospitalRev = parseFloat(document.getElementById('hospital_revenue').value) || 0;
+            const enterpriseRev = parseFloat(document.getElementById('enterprise_revenue').value) || 0;
+            const amcRev = parseFloat(document.getElementById('amc_revenue').value) || 0;
+            
+            const oneTimeCost = computers + furniture + establishment;
+            const manpowerTotal = pm + admin + dev + support;
+            const operationsTotal = rent + electricity + water + internet + pantry + consumables + security + travel;
+            const softwareTotal = hosting + gemini + firebase + sms + licenses;
+            const totalMonthlyCost = manpowerTotal + operationsTotal + softwareTotal;
+            const totalRevenue = patientRev + clinicRev + hospitalRev + enterpriseRev + amcRev;
+            const netProfit = totalRevenue - totalMonthlyCost;
+            const annualProfit = netProfit * 12;
+            const profitMargin = ((netProfit / totalRevenue) * 100).toFixed(1);
+            const roi = ((annualProfit / oneTimeCost) * 100).toFixed(0);
+            
+            document.getElementById('computers_result').textContent = formatCurrency(computers);
+            document.getElementById('furniture_result').textContent = formatCurrency(furniture);
+            document.getElementById('establishment_result').textContent = formatCurrency(establishment);
+            document.getElementById('oneTimeCost').textContent = formatCurrency(oneTimeCost);
+            
+            document.getElementById('pm_result').textContent = formatCurrency(pm);
+            document.getElementById('admin_result').textContent = formatCurrency(admin);
+            document.getElementById('dev_result').textContent = formatCurrency(dev);
+            document.getElementById('support_result').textContent = formatCurrency(support);
+            document.getElementById('manpowerTotal').textContent = formatCurrency(manpowerTotal);
+            
+            document.getElementById('rent_result').textContent = formatCurrency(rent);
+            document.getElementById('electricity_result').textContent = formatCurrency(electricity);
+            document.getElementById('water_result').textContent = formatCurrency(water);
+            document.getElementById('internet_result').textContent = formatCurrency(internet);
+            document.getElementById('pantry_result').textContent = formatCurrency(pantry);
+            document.getElementById('consumables_result').textContent = formatCurrency(consumables);
+            document.getElementById('security_result').textContent = formatCurrency(security);
+            document.getElementById('travel_result').textContent = formatCurrency(travel);
+            document.getElementById('operationsTotal').textContent = formatCurrency(operationsTotal);
+            
+            document.getElementById('hosting_result').textContent = formatCurrency(hosting);
+            document.getElementById('gemini_result').textContent = formatCurrency(gemini);
+            document.getElementById('firebase_result').textContent = formatCurrency(firebase);
+            document.getElementById('sms_result').textContent = formatCurrency(sms);
+            document.getElementById('licenses_result').textContent = formatCurrency(licenses);
+            document.getElementById('softwareTotal').textContent = formatCurrency(softwareTotal);
+            
+            document.getElementById('patient_result').textContent = formatCurrency(patientRev);
+            document.getElementById('clinic_result').textContent = formatCurrency(clinicRev);
+            document.getElementById('hospital_result').textContent = formatCurrency(hospitalRev);
+            document.getElementById('enterprise_result').textContent = formatCurrency(enterpriseRev);
+            document.getElementById('amc_result').textContent = formatCurrency(amcRev);
+            document.getElementById('revenueTotal').textContent = formatCurrency(totalRevenue);
+            
+            document.getElementById('summary_onetime').textContent = formatCurrency(oneTimeCost);
+            document.getElementById('summary_manpower').textContent = formatCurrency(manpowerTotal);
+            document.getElementById('summary_operations').textContent = formatCurrency(operationsTotal);
+            document.getElementById('summary_software').textContent = formatCurrency(softwareTotal);
+            document.getElementById('summary_patients').textContent = formatCurrency(patientRev);
+            document.getElementById('summary_hospitals').textContent = formatCurrency(clinicRev + hospitalRev + enterpriseRev);
+            document.getElementById('summary_amc').textContent = formatCurrency(amcRev);
+            
+            document.getElementById('grandTotalCost').textContent = formatCurrency(totalMonthlyCost);
+            document.getElementById('grandTotalRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('netProfit').textContent = formatCurrency(netProfit);
+            document.getElementById('annualProfit').textContent = formatCurrency(annualProfit);
+            document.getElementById('profitMargin').textContent = profitMargin + '%';
+            document.getElementById('roi').textContent = roi + '%';
+            document.getElementById('breakEven').textContent = oneTimeCost <= netProfit ? '< 1 month' : Math.ceil(oneTimeCost / netProfit) + ' months';
+        }
+        
+        calculate();
+    </script>
+</body>
+</html>
